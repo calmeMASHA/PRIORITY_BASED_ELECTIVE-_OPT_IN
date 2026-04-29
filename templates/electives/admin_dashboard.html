@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded shadow-sm border border-light">
+            <div>
+                <h3 class="mb-1 fw-bold text-dark">Admin Dashboard</h3>
+                <p class="text-muted mb-0">Manage elective allocations and view reports</p>
+            </div>
+            <form method="post" onsubmit="return confirm('Are you sure you want to run the allocation algorithm? This cannot be easily undone.');">
+                {% csrf_token %}
+                <button type="submit" name="allocate" class="btn btn-primary btn-lg px-4 shadow-sm">
+                    ⚡ Run Allocation Algorithm
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Electives Stats -->
+    <div class="col-md-4">
+        <h5 class="fw-bold mb-3 border-bottom pb-2">Electives Overview</h5>
+        {% for elective in electives %}
+        <div class="card shadow-sm mb-3 border-0">
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ elective.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ elective.code }}</h6>
+                <div class="d-flex justify-content-between mt-3">
+                    <div class="text-center">
+                        <div class="fs-4 fw-bold text-dark">{{ elective.total_seats }}</div>
+                        <div class="small text-muted text-uppercase">Total</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="fs-4 fw-bold text-primary">{{ elective.allocated_seats }}</div>
+                        <div class="small text-muted text-uppercase">Allocated</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="fs-4 fw-bold {% if elective.available_seats == 0 %}text-danger{% else %}text-success{% endif %}">
+                            {{ elective.available_seats }}
+                        </div>
+                        <div class="small text-muted text-uppercase">Available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No electives found.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Allocations Table -->
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+            <h5 class="fw-bold mb-0">Current Allocations</h5>
+            <div class="dropdown">
+                <button class="btn btn-outline-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    📥 Export CSV
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'export_allocations' %}">All Branches</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    {% for branch in branches %}
+                    <li><a class="dropdown-item" href="{% url 'export_allocations' %}?branch={{ branch|urlencode }}">Branch: {{ branch }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>USN</th>
+                            <th>Name</th>
+                            <th>Branch</th>
+                            <th>CGPA</th>
+                            <th>Allocated Elective</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alloc in allocations %}
+                        <tr>
+                            <td class="fw-bold">{{ alloc.student.usn }}</td>
+                            <td>{{ alloc.student.name }}</td>
+                            <td><span class="badge bg-secondary">{{ alloc.student.branch }}</span></td>
+                            <td>{{ alloc.student.cgpa }}</td>
+                            <td><span class="badge bg-primary">{{ alloc.elective.code }}</span> {{ alloc.elective.name }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">No allocations yet. Run the allocation algorithm to assign seats.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

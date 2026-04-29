@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h4 class="mb-0 text-primary fw-bold">Submit Elective Preferences</h4>
+                <p class="text-muted mb-0 mt-1">Allocation is based on CGPA and submission timestamp.</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" id="preferenceForm">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label for="{{ form.usn.id_for_label }}" class="form-label fw-bold">Student USN</label>
+                        {{ form.usn }}
+                        {% if form.usn.errors %}
+                            <div class="text-danger small mt-1">{{ form.usn.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <h5 class="fw-bold mb-3 mt-4 border-bottom pb-2">Elective Choices</h5>
+                    
+                    <div class="mb-3 p-3 bg-light rounded border border-primary border-opacity-25">
+                        <label for="{{ form.preference_1.id_for_label }}" class="form-label fw-bold text-primary">Preference 1 (Highest Priority)</label>
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                {{ form.preference_1 }}
+                            </div>
+                            <span class="badge bg-success seat-badge" id="seats-{{ form.preference_1.auto_id }}">Seats: -</span>
+                        </div>
+                        {% if form.preference_1.errors %}
+                            <div class="text-danger small mt-1">{{ form.preference_1.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3 p-3 bg-light rounded border">
+                        <label for="{{ form.preference_2.id_for_label }}" class="form-label fw-bold">Preference 2</label>
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                {{ form.preference_2 }}
+                            </div>
+                            <span class="badge bg-success seat-badge" id="seats-{{ form.preference_2.auto_id }}">Seats: -</span>
+                        </div>
+                        {% if form.preference_2.errors %}
+                            <div class="text-danger small mt-1">{{ form.preference_2.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4 p-3 bg-light rounded border">
+                        <label for="{{ form.preference_3.id_for_label }}" class="form-label fw-bold">Preference 3</label>
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                {{ form.preference_3 }}
+                            </div>
+                            <span class="badge bg-success seat-badge" id="seats-{{ form.preference_3.auto_id }}">Seats: -</span>
+                        </div>
+                        {% if form.preference_3.errors %}
+                            <div class="text-danger small mt-1">{{ form.preference_3.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Submit Preferences</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/ajax_seats.js' %}"></script>
+{% endblock %}
