@@ -46,6 +46,7 @@ def admin_dashboard(request):
         
     electives = Elective.objects.all()
     allocations = Allocation.objects.all().select_related('student', 'elective')
+    preferences = Preference.objects.all().select_related('student', 'elective').order_by('student', 'rank')
     
     # Get distinct branches for filter
     branches = Student.objects.values_list('branch', flat=True).distinct()
@@ -53,6 +54,7 @@ def admin_dashboard(request):
     return render(request, 'electives/admin_dashboard.html', {
         'electives': electives,
         'allocations': allocations,
+        'preferences': preferences,
         'branches': branches
     })
 

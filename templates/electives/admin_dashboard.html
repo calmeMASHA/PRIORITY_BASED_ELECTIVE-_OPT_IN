@@ -97,5 +97,63 @@
             </div>
         </div>
     </div>
+
+    <!-- Student Preferences Section -->
+    <div class="col-12 mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+            <h5 class="fw-bold mb-0">Student Preferences Submitted</h5>
+            <span class="badge bg-info">{{ preferences|dictsort:"student"|length }} Students</span>
+        </div>
+        
+        <div class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>USN</th>
+                            <th>Name</th>
+                            <th>Preference 1</th>
+                            <th>Preference 2</th>
+                            <th>Preference 3</th>
+                            <th>Submitted</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% regroup preferences by student as student_prefs %}
+                        {% for student_group in student_prefs %}
+                        <tr>
+                            <td class="fw-bold">{{ student_group.grouper.usn }}</td>
+                            <td>{{ student_group.grouper.name }}</td>
+                            {% for pref in student_group.list %}
+                                {% if pref.rank == 1 %}
+                                <td><span class="badge bg-primary">{{ pref.elective.code }}</span> {{ pref.elective.name }}</td>
+                                {% endif %}
+                            {% endfor %}
+                            {% for pref in student_group.list %}
+                                {% if pref.rank == 2 %}
+                                <td><span class="badge bg-primary">{{ pref.elective.code }}</span> {{ pref.elective.name }}</td>
+                                {% endif %}
+                            {% endfor %}
+                            {% for pref in student_group.list %}
+                                {% if pref.rank == 3 %}
+                                <td><span class="badge bg-primary">{{ pref.elective.code }}</span> {{ pref.elective.name }}</td>
+                                {% endif %}
+                            {% endfor %}
+                            {% for pref in student_group.list %}
+                                {% if pref.rank == 1 %}
+                                <td class="text-muted small">{{ pref.submitted_at|date:"M d, H:i" }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No preferences submitted yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
